@@ -1,0 +1,47 @@
+</main>
+
+<footer class="pied">
+    <div class="conteneur pied__grille">
+        <div class="pied__bloc">
+            <h2 class="pied__titre"><%= villa.nom %></h2>
+            <p><%= villa.accroche %></p>
+            <p class="pied__adresse">
+                <%= villa.adresse.libelle %>, <%= villa.adresse.ville %>, <%= villa.adresse.pays %>
+            </p>
+        </div>
+
+        <div class="pied__bloc">
+            <h3>Contact</h3>
+            <ul class="pied__liste">
+                <% villa.contact.telephones.forEach(function(tel) { %>
+                    <li><a href="tel:<%= tel.replace(/\s/g, '') %>"><%= tel %></a></li>
+                <% }); %>
+                <li><a href="mailto:<%= villa.contact.email %>"><%= villa.contact.email %></a></li>
+            </ul>
+        </div>
+
+        <div class="pied__bloc">
+            <h3>Localisation</h3>
+            <p><a href="<%= villa.localisation.lienGoogleMaps %>" target="_blank" rel="noopener">
+                Voir sur Google Maps
+            </a></p>
+            <p class="pied__gps"><%= villa.localisation.latitude %>, <%= villa.localisation.longitude %></p>
+        </div>
+
+        <div class="pied__bloc">
+            <h3>Navigation</h3>
+            <ul class="pied__liste">
+                <li><a href="/chambres">Chambres &amp; Suites</a></li>
+                <li><a href="/galerie">Galerie</a></li>
+                <li><a href="/contact">Contact &amp; Réservation</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="pied__bas conteneur">
+        <p>&copy; <%= new Date().getFullYear() %> <%= villa.nom %>. Tous droits réservés.</p>
+    </div>
+</footer>
+
+<script src="/js/main.js"></script>
+</body>
+</html>

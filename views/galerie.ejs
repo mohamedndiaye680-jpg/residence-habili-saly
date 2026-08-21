@@ -1,0 +1,40 @@
+<%- include('partials/header') %>
+
+<section class="section entete-page">
+    <div class="conteneur">
+        <p class="eyebrow">En images</p>
+        <h1>Galerie</h1>
+        <p class="entete-page__intro">Un aperçu de la résidence, de ses chambres et de ses espaces communs. Cliquez sur une photo pour l'agrandir.</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="conteneur">
+        <div class="grille-galerie" id="grilleGalerie">
+            <% villa.galerie.forEach(function(photo, index) { %>
+                <button type="button" class="grille-galerie__item" data-index="<%= index %>" aria-label="Agrandir : <%= photo.legende %>">
+                    <img src="<%= photo.src %>" alt="<%= photo.legende %>" loading="lazy">
+                    <span class="grille-galerie__legende"><%= photo.legende %></span>
+                </button>
+            <% }); %>
+        </div>
+    </div>
+</section>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Aperçu de la photo">
+    <button type="button" class="lightbox__fermer" id="lightboxFermer" aria-label="Fermer l'aperçu">&times;</button>
+    <button type="button" class="lightbox__nav lightbox__nav--precedent" id="lightboxPrecedent" aria-label="Photo précédente">&#8249;</button>
+    <figure class="lightbox__figure">
+        <img src="" alt="" id="lightboxImage">
+        <figcaption id="lightboxLegende"></figcaption>
+    </figure>
+    <button type="button" class="lightbox__nav lightbox__nav--suivant" id="lightboxSuivant" aria-label="Photo suivante">&#8250;</button>
+</div>
+
+<script>
+    // Données de la galerie injectées côté serveur pour la lightbox
+    window.GALERIE_PHOTOS = <%- JSON.stringify(villa.galerie) %>;
+</script>
+
+<%- include('partials/footer') %>

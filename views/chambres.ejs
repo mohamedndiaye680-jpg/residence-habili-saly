@@ -1,0 +1,68 @@
+<%- include('partials/header') %>
+
+<section class="section entete-page">
+    <div class="conteneur">
+        <p class="eyebrow">Hébergements</p>
+        <h1>Chambres &amp; Suites</h1>
+        <p class="entete-page__intro">
+            <%= villa.statistiques.nombreChambresTotal %> chambres réparties en trois formules,
+            toutes équipées des commodités modernes, pour s'adapter à chaque type de séjour.
+        </p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="conteneur">
+        <% villa.hebergements.forEach(function(h, index) { %>
+            <article class="fiche-hebergement <%= index % 2 === 1 ? 'fiche-hebergement--inverse' : '' %>">
+                <div class="fiche-hebergement__images">
+                    <img src="<%= h.images[0] %>" alt="<%= h.nom %>" loading="lazy" class="fiche-hebergement__image-principale">
+                    <% if (h.images.length > 1) { %>
+                        <div class="fiche-hebergement__miniatures">
+                            <% h.images.slice(1).forEach(function(img) { %>
+                                <img src="<%= img %>" alt="<%= h.nom %> — vue supplémentaire" loading="lazy">
+                            <% }); %>
+                        </div>
+                    <% } %>
+                </div>
+                <div class="fiche-hebergement__contenu">
+                    <h2><%= h.nom %></h2>
+                    <p class="fiche-hebergement__dispo"><%= h.quantite %> disponible<%= h.quantite > 1 ? 's' : '' %> à la résidence</p>
+                    <p><%= h.description %></p>
+                    <ul class="fiche-hebergement__equipements">
+                        <% h.equipements.forEach(function(eq) { %>
+                            <li><%= eq %></li>
+                        <% }); %>
+                    </ul>
+                    <div class="fiche-hebergement__pied">
+                        <p class="fiche-hebergement__prix">
+                            <% if (h.surDemande) { %>
+                                Tarif sur demande
+                            <% } else { %>
+                                <strong><%= h.tarif.toLocaleString('fr-FR') %> FCFA</strong> / <%= h.unite %>
+                            <% } %>
+                        </p>
+                        <a href="/contact?hebergement=<%= h.id %>" class="bouton bouton--primaire">Réserver ce type</a>
+                    </div>
+                </div>
+            </article>
+        <% }); %>
+    </div>
+</section>
+
+<section class="section privatisation">
+    <div class="conteneur privatisation__carte">
+        <div>
+            <p class="eyebrow eyebrow--clair">Événements &amp; grands groupes</p>
+            <h2><%= villa.privatisation.nom %></h2>
+            <p><%= villa.privatisation.description %></p>
+        </div>
+        <div class="privatisation__prix-bloc">
+            <p class="privatisation__prix"><%= villa.privatisation.tarif.toLocaleString('fr-FR') %> FCFA</p>
+            <p class="privatisation__unite"><%= villa.privatisation.unite %></p>
+            <a href="/contact?hebergement=privatisation" class="bouton bouton--accent">Demander un devis</a>
+        </div>
+    </div>
+</section>
+
+<%- include('partials/footer') %>

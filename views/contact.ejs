@@ -1,0 +1,112 @@
+<%- include('partials/header') %>
+
+<section class="section entete-page">
+    <div class="conteneur">
+        <p class="eyebrow">Contact &amp; Réservation</p>
+        <h1>Parlons de votre séjour</h1>
+        <p class="entete-page__intro">Remplissez le formulaire ci-dessous ou contactez-nous directement par téléphone : notre équipe vous répond rapidement.</p>
+    </div>
+</section>
+
+<section class="section contact-grille-section">
+    <div class="conteneur contact-grille">
+        <div class="contact-infos">
+            <h2>Nos coordonnées</h2>
+            <ul class="contact-infos__liste">
+                <li>
+                    <span class="contact-infos__label">Adresse</span>
+                    <span><%= villa.adresse.libelle %>, <%= villa.adresse.ville %>, <%= villa.adresse.pays %></span>
+                </li>
+                <li>
+                    <span class="contact-infos__label">Téléphone</span>
+                    <span>
+                        <% villa.contact.telephones.forEach(function(tel, i) { %>
+                            <a href="tel:<%= tel.replace(/\s/g, '') %>"><%= tel %></a><%= i < villa.contact.telephones.length - 1 ? ' / ' : '' %>
+                        <% }); %>
+                    </span>
+                </li>
+                <li>
+                    <span class="contact-infos__label">Email</span>
+                    <span><a href="mailto:<%= villa.contact.email %>"><%= villa.contact.email %></a></span>
+                </li>
+                <li>
+                    <span class="contact-infos__label">Localisation</span>
+                    <span><a href="<%= villa.localisation.lienGoogleMaps %>" target="_blank" rel="noopener">
+                        <%= villa.localisation.latitude %>, <%= villa.localisation.longitude %> — Voir sur Google Maps
+                    </a></span>
+                </li>
+            </ul>
+
+            <div class="contact-carte">
+                <iframe
+                    title="Localisation de la Résidence Habili Saly"
+                    src="https://maps.google.com/maps?q=<%= villa.localisation.latitude %>,<%= villa.localisation.longitude %>&z=15&output=embed"
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+            </div>
+        </div>
+
+        <div class="contact-formulaire">
+            <h2>Formulaire de réservation</h2>
+
+            <div class="alerte alerte--succes" id="alerteSucces" <%= !succes ? 'hidden' : '' %>>
+                Votre demande a bien été envoyée. Nous vous recontactons très vite !
+            </div>
+
+            <% if (erreurs && erreurs.length > 0) { %>
+                <div class="alerte alerte--erreur">
+                    <ul>
+                        <% erreurs.forEach(function(e) { %>
+                            <li><%= e.msg %></li>
+                        <% }); %>
+                    </ul>
+                </div>
+            <% } %>
+
+            <form action="/api/contact" method="POST" id="formulaireContact" novalidate>
+                <div class="champ">
+                    <label for="nom">Nom complet *</label>
+                    <input type="text" id="nom" name="nom" required minlength="2" maxlength="100"
+                           value="<%= anciennesValeurs.nom || '' %>">
+                </div>
+
+                <div class="champ-groupe">
+                    <div class="champ">
+                        <label for="telephone">Téléphone *</label>
+                        <input type="tel" id="telephone" name="telephone" required
+                               value="<%= anciennesValeurs.telephone || '' %>">
+                    </div>
+                    <div class="champ">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email"
+                               value="<%= anciennesValeurs.email || '' %>">
+                    </div>
+                </div>
+
+                <div class="champ">
+                    <label for="type_hebergement">Type d'hébergement souhaité *</label>
+                    <select id="type_hebergement" name="type_hebergement" required>
+                        <option value="">— Choisir —</option>
+                        <% villa.hebergements.forEach(function(h) { %>
+                            <option value="<%= h.nom %>" <%= anciennesValeurs.type_hebergement === h.nom ? 'selected' : '' %>><%= h.nom %></option>
+                        <% }); %>
+                        <option value="Privatisation complète" <%= anciennesValeurs.type_hebergement === 'Privatisation complète' ? 'selected' : '' %>>Privatisation complète</option>
+                        <option value="Je ne sais pas encore" <%= anciennesValeurs.type_hebergement === 'Je ne sais pas encore' ? 'selected' : '' %>>Je ne sais pas encore</option>
+                    </select>
+                </div>
+
+                <div class="champ">
+                    <label for="message">Votre message *</label>
+                    <textarea id="message" name="message" rows="5" required minlength="5" maxlength="2000"
+                              placeholder="Dates de séjour souhaitées, nombre de personnes, questions particulières..."><%= anciennesValeurs.message || '' %></textarea>
+                </div>
+
+                <button type="submit" class="bouton bouton--accent bouton--large">Envoyer la demande</button>
+                <p class="contact-formulaire__note">* Champs obligatoires. Vos informations ne sont utilisées que pour traiter votre demande.</p>
+            </form>
+        </div>
+    </div>
+</section>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= pageTitle %></title>
+    <meta name="description" content="<%= pageDescription %>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Mulish:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<a class="lien-evitement" href="#contenu-principal">Aller au contenu principal</a>
+
+<header class="entete">
+    <div class="conteneur entete__barre">
+        <a href="/" class="entete__logo">
+            <span class="entete__logo-nom"><%= villa.nom %></span>
+        </a>
+
+        <button class="entete__bouton-menu" id="boutonMenu" aria-expanded="false" aria-controls="navPrincipale">
+            <span class="sr-only">Ouvrir le menu</span>
+            <span class="entete__icone-menu" aria-hidden="true"></span>
+        </button>
+
+        <nav class="entete__nav" id="navPrincipale">
+            <ul>
+                <li><a href="/" class="<%= currentPath === '/' ? 'actif' : '' %>">Accueil</a></li>
+                <li><a href="/chambres" class="<%= currentPath === '/chambres' ? 'actif' : '' %>">Chambres &amp; Suites</a></li>
+                <li><a href="/galerie" class="<%= currentPath === '/galerie' ? 'actif' : '' %>">Galerie</a></li>
+                <li><a href="/contact" class="<%= currentPath === '/contact' ? 'actif' : '' %>">Contact</a></li>
+            </ul>
+            <a href="/contact" class="bouton bouton--accent entete__cta">Réserver</a>
+        </nav>
+    </div>
+</header>
+
+<main id="contenu-principal">

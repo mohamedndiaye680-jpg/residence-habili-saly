@@ -1,0 +1,114 @@
+<%- include('partials/header') %>
+
+<section class="hero">
+    <div class="hero__image" style="background-image: url('/images/villa/facade-1.jpg');" role="img" aria-label="Façade de la Résidence Habili Saly"></div>
+    <div class="hero__voile"></div>
+    <div class="conteneur hero__contenu">
+        <p class="hero__eyebrow">Saly Joseph, derrière Diambars — Sénégal</p>
+        <h1 class="hero__titre"><%= villa.nom %></h1>
+        <p class="hero__accroche"><%= villa.accroche %></p>
+        <div class="hero__actions">
+            <a href="/chambres" class="bouton bouton--accent">Voir les chambres</a>
+            <a href="/contact" class="bouton bouton--fantome">Réserver maintenant</a>
+        </div>
+    </div>
+</section>
+
+<section class="section stats">
+    <div class="conteneur stats__grille">
+        <div class="stats__item">
+            <span class="stats__chiffre"><%= villa.statistiques.surfaceM2 %> m²</span>
+            <span class="stats__label">Terrain à trois angles</span>
+        </div>
+        <div class="stats__item">
+            <span class="stats__chiffre"><%= villa.statistiques.placesParking %></span>
+            <span class="stats__label">Places de parking sécurisé</span>
+        </div>
+        <div class="stats__item">
+            <span class="stats__chiffre"><%= villa.statistiques.nombreChambresTotal %></span>
+            <span class="stats__label">Chambres &amp; suites</span>
+        </div>
+        <div class="stats__item">
+            <span class="stats__chiffre"><%= villa.statistiques.capaciteSeminaire %></span>
+            <span class="stats__label">Places en salle de séminaire</span>
+        </div>
+    </div>
+</section>
+
+<section class="section presentation">
+    <div class="conteneur presentation__grille">
+        <div class="presentation__texte">
+            <p class="eyebrow">Bienvenue</p>
+            <h2>Un cadre pensé pour votre confort</h2>
+            <p><%= villa.description %></p>
+            <p><%= villa.descriptionLongue %></p>
+        </div>
+        <div class="presentation__image">
+            <img src="/images/villa/terrasse-1.jpg" alt="Terrasse et coursive de la résidence" loading="lazy">
+        </div>
+    </div>
+</section>
+
+<section class="section hebergements-apercu">
+    <div class="conteneur">
+        <p class="eyebrow">Nos hébergements</p>
+        <h2>Chambres, suites et privatisation</h2>
+        <div class="cartes-hebergement">
+            <% villa.hebergements.forEach(function(h) { %>
+                <article class="carte-hebergement">
+                    <div class="carte-hebergement__image">
+                        <img src="<%= h.images[0] %>" alt="<%= h.nom %>" loading="lazy">
+                    </div>
+                    <div class="carte-hebergement__corps">
+                        <h3><%= h.nom %></h3>
+                        <p class="carte-hebergement__quantite"><%= h.quantite %> disponible<%= h.quantite > 1 ? 's' : '' %></p>
+                        <p><%= h.description %></p>
+                        <p class="carte-hebergement__prix">
+                            <% if (h.surDemande) { %>
+                                Tarif sur demande
+                            <% } else { %>
+                                <strong><%= h.tarif.toLocaleString('fr-FR') %> FCFA</strong> / <%= h.unite %>
+                            <% } %>
+                        </p>
+                    </div>
+                </article>
+            <% }); %>
+        </div>
+        <div class="hebergements-apercu__lien">
+            <a href="/chambres" class="bouton bouton--primaire">Voir tous les détails</a>
+        </div>
+    </div>
+</section>
+
+<section class="section prestations">
+    <div class="conteneur">
+        <p class="eyebrow">Prestations</p>
+        <h2>Pensées pour votre bien-être</h2>
+        <ul class="grille-prestations">
+            <% villa.prestations.forEach(function(p) { %>
+                <li class="prestation">
+                    <span class="prestation__icone prestation__icone--<%= p.icone %>" aria-hidden="true"></span>
+                    <h3><%= p.titre %></h3>
+                    <p><%= p.description %></p>
+                </li>
+            <% }); %>
+        </ul>
+    </div>
+</section>
+
+<section class="section bandeau-cta">
+    <div class="conteneur bandeau-cta__contenu">
+        <div>
+            <h2>Prêt à réserver votre séjour ?</h2>
+            <p>Contactez-nous dès maintenant, notre équipe vous répond rapidement.</p>
+        </div>
+        <div class="bandeau-cta__actions">
+            <a href="tel:<%= villa.contact.telephones[0].replace(/\s/g, '') %>" class="bouton bouton--fantome-clair">
+                <%= villa.contact.telephones[0] %>
+            </a>
+            <a href="/contact" class="bouton bouton--accent">Faire une demande</a>
+        </div>
+    </div>
+</section>
+
+<%- include('partials/footer') %>

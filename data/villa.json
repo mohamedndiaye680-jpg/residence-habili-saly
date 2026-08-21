@@ -1,0 +1,84 @@
+{
+  "nom": "Résidence Habili Saly",
+  "accroche": "Confort, sérénité et modernité face à l'Atlantique",
+  "description": "Implantée sur un terrain de 530 m² à trois angles, avec un parking pouvant accueillir jusqu'à 10 véhicules, la Résidence Habili Saly offre un séjour d'exception pour des vacances, des déplacements professionnels ou des événements.",
+  "descriptionLongue": "À la Résidence Habili Saly, chaque détail est pensé pour vous offrir une expérience alliant confort, convivialité et excellence. Que vous veniez pour des vacances en famille, un déplacement professionnel ou l'organisation d'un événement, notre équipe met un point d'honneur à vous accueillir dans un cadre élégant, sécurisé et parfaitement entretenu, à quelques minutes des plages de Saly.",
+  "adresse": {
+    "libelle": "Saly Joseph, derrière Diambars",
+    "ville": "Saly",
+    "pays": "Sénégal"
+  },
+  "contact": {
+    "telephones": ["78 958 12 08", "77 572 73 94", "77 332 67 23"],
+    "email": "residencehabilisaly@gmail.com"
+  },
+  "localisation": {
+    "latitude": 14.450926,
+    "longitude": -17.002497,
+    "lienGoogleMaps": "https://maps.google.com/?q=14.450926,-17.002497"
+  },
+  "statistiques": {
+    "surfaceM2": 530,
+    "placesParking": 10,
+    "nombreChambresTotal": 10,
+    "capaciteSeminaire": 20
+  },
+  "hebergements": [
+    {
+      "id": "standard",
+      "nom": "Chambre Standard",
+      "quantite": 5,
+      "tarif": 25000,
+      "unite": "nuitée",
+      "surDemande": false,
+      "description": "Une chambre confortable et lumineuse, équipée de toutes les commodités modernes pour un séjour paisible, en solo, en couple ou en déplacement professionnel.",
+      "equipements": ["Climatisation", "Salle de bain privative", "Literie confort", "Wifi"],
+      "images": ["/images/rooms/standard-1.jpg"]
+    },
+    {
+      "id": "suite",
+      "nom": "Suite",
+      "quantite": 4,
+      "tarif": 35000,
+      "unite": "nuitée",
+      "surDemande": false,
+      "description": "Un espace plus spacieux avec une ambiance soignée, pensé pour les séjours qui demandent un peu plus de confort et d'intimité.",
+      "equipements": ["Climatisation", "Salle de bain privative", "Coin salon", "Literie confort", "Wifi"],
+      "images": ["/images/rooms/suite-1.jpg", "/images/rooms/suite-2.jpg"]
+    },
+    {
+      "id": "suite-premium",
+      "nom": "Suite Premium",
+      "quantite": 1,
+      "tarif": null,
+      "unite": "nuitée",
+      "surDemande": true,
+      "description": "Notre chambre d'exception : accès privilégié, vue sur la piscine et un salon privatif pensé pour recevoir. Le choix idéal pour une occasion particulière.",
+      "equipements": ["Vue piscine", "Accès privilégié", "Salon privatif", "Climatisation", "Literie premium", "Wifi"],
+      "images": ["/images/rooms/premium-salon-1.jpg", "/images/rooms/premium-salon-2.jpg", "/images/rooms/premium-chambre-1.jpg"]
+    }
+  ],
+  "privatisation": {
+    "nom": "Privatisation complète de la résidence",
+    "tarif": 350000,
+    "unite": "forfait",
+    "description": "Pour vos événements privés, séminaires ou grandes réunions de famille : profitez de l'ensemble de la résidence rien que pour vous, chambres, terrasse, piscine et salle de séminaire inclus."
+  },
+  "prestations": [
+    { "titre": "Chambres modernes", "description": "Toutes les commodités modernes dans chaque chambre.", "icone": "bed" },
+    { "titre": "Piscine", "description": "Idéale pour vos moments de détente.", "icone": "pool" },
+    { "titre": "Terrasse panoramique", "description": "Grande terrasse offrant une vue à 360°.", "icone": "view" },
+    { "titre": "Salle de séminaire", "description": "Climatisée, jusqu'à 20 personnes.", "icone": "meeting" },
+    { "titre": "Parking sécurisé", "description": "Parking privé pouvant accueillir 10 véhicules.", "icone": "parking" }
+  ],
+  "galerie": [
+    { "src": "/images/villa/facade-1.jpg", "legende": "La façade de la Résidence Habili Saly", "categorie": "exterieur" },
+    { "src": "/images/villa/terrasse-1.jpg", "legende": "Terrasse et coursive extérieure", "categorie": "exterieur" },
+    { "src": "/images/rooms/standard-1.jpg", "legende": "Chambre Standard", "categorie": "chambres" },
+    { "src": "/images/rooms/suite-1.jpg", "legende": "Suite - ambiance soirée", "categorie": "chambres" },
+    { "src": "/images/rooms/suite-2.jpg", "legende": "Suite - vue d'ensemble", "categorie": "chambres" },
+    { "src": "/images/rooms/premium-salon-1.jpg", "legende": "Suite Premium - salon privatif", "categorie": "premium" },
+    { "src": "/images/rooms/premium-salon-2.jpg", "legende": "Suite Premium - espace détente", "categorie": "premium" },
+    { "src": "/images/rooms/premium-chambre-1.jpg", "legende": "Suite Premium - chambre", "categorie": "premium" }
+  ]
+}
