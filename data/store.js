@@ -1,10 +1,14 @@
 // data/store.js
-// Petite couche d'accès aux données. Aujourd'hui basée sur des fichiers JSON,
-// pensée pour être remplacée facilement par une vraie base de données
-// (MongoDB, PostgreSQL, SQLite...) sans changer les routes qui l'utilisent.
+// Couche d'accès aux données.
+// - Les infos de la villa restent dans data/villa.json (peu changeant, simple à éditer).
+// - Les messages/réservations sont stockés dans MongoDB (persistant, ne disparaît pas
+//   au redémarrage du serveur). Si MongoDB n'est pas configuré (pas de MONGODB_URI),
+//   on utilise en secours le fichier data/messages.json, comme avant.
 
 const fs = require('fs');
 const path = require('path');
+const mongoose = require('mongoose');
+const Message = require('../models/Message');
 
 const VILLA_PATH = path.join(__dirname, 'villa.json');
 const MESSAGES_PATH = path.join(__dirname, 'messages.json');
@@ -14,7 +18,12 @@ function lireVilla() {
   return JSON.parse(brut);
 }
 
-function lireMessages() {
+function mongoConnecte() {
+  return mongoose.connection.readyState === 1;
+}
+
+// --- Secours fichier JSON (utilisé seulement si MongoDB n'est pas connecté) ---
+function lireMessagesFichier() {
   try {
     const brut = fs.readFileSync(MESSAGES_PATH, 'utf-8');
     return JSON.parse(brut);
@@ -23,11 +32,12 @@ function lireMessages() {
   }
 }
 
-function ajouterMessage(message) {
-  const messages = lireMessages();
+function ajouterMessageFichier(message) {
+  const messages = lireMessagesFichier();
   const nouveauMessage = {
     id: Date.now(),
     dateReception: new Date().toISOString(),
+    traite: false,
     ...message,
   };
   messages.push(nouveauMessage);
@@ -35,4 +45,41 @@ function ajouterMessage(message) {
   return nouveauMessage;
 }
 
-module.exports = { lireVilla, lireMessages, ajouterMessage };
+// --- Fonctions principales (utilisées par les routes) ---
+
+async function ajouterMessage(message) {
+  if (mongoConnecte()) {
+    const nouveauMessage = await Message.create(message);
+    return nouveauMessage;
+  }
+  return ajouterMessageFichier(message);
+}
+
+async function lireMessages() {
+  if (mongoConnecte()) {
+    return Message.find().sort({ dateReception: -1 }).lean();
+  }
+  return lireMessagesFichier().sort(
+    (a, b) => new Date(b.dateReception) - new Date(a.dateReception)
+  );
+}
+
+async function marquerMessageTraite(id, traite) {
+  if (mongoConnecte()) {
+    return Message.findByIdAndUpdate(id, { traite }, { new: true }).lean();
+  }
+  const messages = lireMessagesFichier();
+  const msg = messages.find((m) => String(m.id) === String(id));
+  if (msg) {
+    msg.traite = traite;
+    fs.writeFileSync(MESSAGES_PATH, JSON.stringify(messages, null, 2), 'utf-8');
+  }
+  return msg;
+}
+
+module.exports = {
+  lireVilla,
+  lireMessages,
+  ajouterMessage,
+  marquerMessageTraite,
+};

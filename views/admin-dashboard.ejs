@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Réservations — Résidence Habili Saly</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Mulish:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body { background: var(--sable); }
+        .admin-entete {
+            background: var(--blanc);
+            box-shadow: var(--ombre-legere);
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .admin-entete h1 {
+            font-family: var(--police-titres);
+            font-size: 1.4rem;
+            color: var(--encre);
+            margin: 0;
+        }
+        .admin-entete form button {
+            background: none;
+            border: 1px solid var(--sable-fonce);
+            border-radius: var(--rayon-petit);
+            padding: 8px 16px;
+            cursor: pointer;
+            color: var(--encre-doux);
+        }
+        .admin-corps {
+            max-width: var(--largeur-max);
+            margin: 32px auto;
+            padding: 0 24px;
+        }
+        .admin-carte-demande {
+            background: var(--blanc);
+            border-radius: var(--rayon);
+            box-shadow: var(--ombre-legere);
+            padding: 20px 24px;
+            margin-bottom: 16px;
+            border-left: 4px solid var(--terracotta);
+        }
+        .admin-carte-demande.traite {
+            border-left-color: var(--succes);
+            opacity: 0.7;
+        }
+        .admin-carte-demande__entete {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .admin-carte-demande__nom {
+            font-family: var(--police-titres);
+            font-size: 1.2rem;
+            color: var(--encre);
+        }
+        .admin-carte-demande__date {
+            color: var(--encre-doux);
+            font-size: 0.85rem;
+        }
+        .admin-carte-demande__details {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+        .admin-carte-demande__details strong { color: var(--ocean); }
+        .admin-carte-demande__message {
+            background: var(--sable);
+            border-radius: var(--rayon-petit);
+            padding: 12px 14px;
+            white-space: pre-wrap;
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+        }
+        .admin-vide {
+            text-align: center;
+            color: var(--encre-doux);
+            padding: 60px 20px;
+        }
+        .admin-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            background: var(--terracotta-clair);
+            color: var(--blanc);
+        }
+        .admin-badge.traite { background: var(--succes); }
+        .admin-toggle-form button {
+            border: 1px solid var(--sable-fonce);
+            background: var(--blanc);
+            border-radius: var(--rayon-petit);
+            padding: 6px 14px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+<div class="admin-entete">
+    <h1>Demandes de réservation (<%= messages.length %>)</h1>
+    <form method="POST" action="/admin/deconnexion">
+        <button type="submit">Se déconnecter</button>
+    </form>
+</div>
+
+<div class="admin-corps">
+    <% if (messages.length === 0) { %>
+        <div class="admin-vide">Aucune demande reçue pour le moment.</div>
+    <% } else { %>
+        <% messages.forEach(function(m) { %>
+            <% const id = m._id || m.id; %>
+            <div class="admin-carte-demande <%= m.traite ? 'traite' : '' %>">
+                <div class="admin-carte-demande__entete">
+                    <div>
+                        <span class="admin-carte-demande__nom"><%= m.nom %></span>
+                        <span class="admin-badge <%= m.traite ? 'traite' : '' %>">
+                            <%= m.traite ? 'Traité' : 'Nouveau' %>
+                        </span>
+                    </div>
+                    <span class="admin-carte-demande__date">
+                        <%= new Date(m.dateReception).toLocaleString('fr-FR') %>
+                    </span>
+                </div>
+                <div class="admin-carte-demande__details">
+                    <span><strong>Téléphone :</strong> <%= m.telephone %></span>
+                    <% if (m.email) { %><span><strong>Email :</strong> <%= m.email %></span><% } %>
+                    <span><strong>Hébergement :</strong> <%= m.typeHebergement %></span>
+                </div>
+                <div class="admin-carte-demande__message"><%= m.message %></div>
+                <form class="admin-toggle-form" method="POST" action="/admin/messages/<%= id %>/traite">
+                    <input type="hidden" name="traite" value="<%= m.traite ? '0' : '1' %>">
+                    <button type="submit">
+                        <%= m.traite ? 'Marquer comme non traité' : 'Marquer comme traité' %>
+                    </button>
+                </form>
+            </div>
+        <% }); %>
+    <% } %>
+</div>
+</body>
+</html>

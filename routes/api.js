@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const { body, validationResult } = require('express-validator');
 const { lireVilla, ajouterMessage } = require('../data/store');
+const { envoyerNotificationReservation } = require('../data/mailer');
 
 // --- GET /api/villa : informations générales ---
 router.get('/villa', (req, res) => {
@@ -49,7 +50,7 @@ const regleValidation = [
     .isLength({ min: 5, max: 2000 }).withMessage('Le message doit contenir entre 5 et 2000 caractères.'),
 ];
 
-router.post('/contact', regleValidation, (req, res) => {
+router.post('/contact', regleValidation, async (req, res) => {
   const resultatValidation = validationResult(req);
   const prefereJson = req.accepts(['html', 'json']) === 'json';
 
@@ -71,23 +72,47 @@ router.post('/contact', regleValidation, (req, res) => {
     });
   }
 
-  const message = ajouterMessage({
-    nom: req.body.nom.trim(),
-    telephone: req.body.telephone.trim(),
-    email: (req.body.email || '').trim(),
-    typeHebergement: req.body.type_hebergement.trim(),
-    message: req.body.message.trim(),
-  });
+  try {
+    const demande = {
+      nom: req.body.nom.trim(),
+      telephone: req.body.telephone.trim(),
+      email: (req.body.email || '').trim(),
+      typeHebergement: req.body.type_hebergement.trim(),
+      message: req.body.message.trim(),
+    };
 
-  if (prefereJson) {
-    return res.status(201).json({
-      success: true,
-      message: 'Votre demande a bien été envoyée. Nous vous recontactons très vite !',
-      id: message.id,
+    const message = await ajouterMessage(demande);
+
+    // Envoi de l'email en arrière-plan : on ne fait pas attendre le visiteur.
+    envoyerNotificationReservation(demande);
+
+    if (prefereJson) {
+      return res.status(201).json({
+        success: true,
+        message: 'Votre demande a bien été envoyée. Nous vous recontactons très vite !',
+        id: message.id || message._id,
+      });
+    }
+
+    return res.redirect('/contact?succes=1');
+  } catch (err) {
+    console.error('Erreur lors de l\'enregistrement de la demande :', err);
+    if (prefereJson) {
+      return res.status(500).json({
+        success: false,
+        message: "Une erreur est survenue, merci de réessayer.",
+      });
+    }
+    const villa = lireVilla();
+    return res.status(500).render('contact', {
+      pageTitle: 'Contact & Réservation — ' + villa.nom,
+      pageDescription: "Contactez-nous pour réserver votre séjour à la Résidence Habili Saly.",
+      villa,
+      succes: false,
+      erreurs: [{ msg: "Une erreur est survenue, merci de réessayer." }],
+      anciennesValeurs: req.body,
     });
   }
-
-  return res.redirect('/contact?succes=1');
 });
 
 module.exports = router;

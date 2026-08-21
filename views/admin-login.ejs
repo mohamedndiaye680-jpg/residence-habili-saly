@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion admin — Résidence Habili Saly</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Mulish:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .admin-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--sable);
+            padding: 24px;
+        }
+        .admin-carte {
+            background: var(--blanc);
+            border-radius: var(--rayon);
+            box-shadow: var(--ombre);
+            padding: 40px;
+            width: 100%;
+            max-width: 380px;
+        }
+        .admin-carte h1 {
+            font-family: var(--police-titres);
+            font-size: 1.5rem;
+            color: var(--encre);
+            margin: 0 0 24px;
+            text-align: center;
+        }
+        .admin-champ {
+            margin-bottom: 18px;
+        }
+        .admin-champ label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--encre);
+        }
+        .admin-champ input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--sable-fonce);
+            border-radius: var(--rayon-petit);
+            font-family: var(--police-texte);
+            font-size: 1rem;
+        }
+        .admin-erreur {
+            background: #fbe9e5;
+            color: var(--erreur);
+            padding: 12px 14px;
+            border-radius: var(--rayon-petit);
+            margin-bottom: 18px;
+            font-size: 0.9rem;
+        }
+        .admin-carte button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: var(--rayon-petit);
+            background: var(--terracotta);
+            color: var(--blanc);
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        .admin-carte button:hover { background: var(--terracotta-fonce); }
+    </style>
+</head>
+<body>
+<div class="admin-page">
+    <div class="admin-carte">
+        <h1>Espace administrateur</h1>
+        <% if (erreur) { %>
+            <div class="admin-erreur"><%= erreur %></div>
+        <% } %>
+        <form method="POST" action="/admin/connexion">
+            <div class="admin-champ">
+                <label for="motDePasse">Mot de passe</label>
+                <input type="password" id="motDePasse" name="motDePasse" required autofocus>
+            </div>
+            <button type="submit">Se connecter</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

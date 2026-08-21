@@ -117,14 +117,44 @@ une vraie base de données en production — voir section Évolutions).
 - **Responsive** : mobile, tablette, desktop — menu mobile en panneau
   latéral avec fermeture au clic/Échap.
 
-## 7. Évolutions possibles (hors périmètre de cette V1)
+## 7. Réservations : base de données, email et page admin
+
+Depuis la V2, les demandes de réservation ne sont plus seulement stockées dans
+un fichier local — elles sont sauvegardées dans MongoDB (persistant), un email
+est envoyé à chaque nouvelle demande, et une page `/admin` permet de tout
+consulter.
+
+### Configuration nécessaire
+
+Copiez `.env.example` en `.env` (en local) et remplissez :
+
+| Variable | À quoi ça sert | Comment l'obtenir |
+|---|---|---|
+| `MONGODB_URI` | Connexion à la base de données | Créer un cluster gratuit sur [MongoDB Atlas](https://www.mongodb.com/cloud/atlas/register), puis "Connect" > "Drivers" pour copier l'URL |
+| `GMAIL_USER` | Adresse qui envoie/reçoit les notifications | `residencehabilisaly@gmail.com` |
+| `GMAIL_PASS` | Mot de passe d'application Gmail | Activer la validation en 2 étapes sur le compte Google, puis créer un mot de passe sur https://myaccount.google.com/apppasswords |
+| `ADMIN_PASSWORD` | Mot de passe pour accéder à `/admin` | À choisir soi-même (pas trop simple) |
+| `SESSION_SECRET` | Sécurise les sessions de connexion admin | Une phrase aléatoire, peu importe laquelle |
+| `SITE_URL` | Utilisée dans le lien de l'email de notification | L'URL Render du site, ex `https://residence-habili-saly.onrender.com` |
+
+**Sur Render**, ces variables se configurent dans l'onglet **Environment** du
+service (pas de fichier `.env` à uploader).
+
+**Sans configuration**, le site continue de fonctionner : les messages sont
+alors sauvegardés dans `data/messages.json` comme avant, et les emails ne
+sont simplement pas envoyés (un avertissement s'affiche dans les logs).
+
+### Accéder aux réservations
+
+Aller sur `/admin`, entrer le mot de passe défini dans `ADMIN_PASSWORD`. La
+page liste toutes les demandes (les plus récentes en premier), avec un
+bouton pour marquer chaque demande comme traitée.
+
+## 8. Évolutions possibles (hors périmètre de cette V2)
 
 - Calendrier de disponibilité et paiement en ligne (Wave, Orange Money, carte).
 - Panneau d'administration pour éditer `villa.json` sans toucher au code.
-- Envoi d'un email de confirmation (Nodemailer) à chaque nouvelle demande.
 - Version multilingue (FR/EN) pour la clientèle internationale de Saly.
-- Migration de `messages.json` / `villa.json` vers une vraie base de données
-  (MongoDB, PostgreSQL ou SQLite).
 
 ## 8. Informations de la résidence (rappel)
 
@@ -132,4 +162,3 @@ une vraie base de données en production — voir section Évolutions).
 - **Téléphones** : 78 958 12 08 / 77 572 73 94 / 77 332 67 23
 - **Email** : residencehabilisaly@gmail.com
 - **Localisation** : https://maps.google.com/?q=14.450926,-17.002497
-# residence-habili-saly
