@@ -132,3 +132,4 @@ une vraie base de données en production — voir section Évolutions).
 - **Téléphones** : 78 958 12 08 / 77 572 73 94 / 77 332 67 23
 - **Email** : residencehabilisaly@gmail.com
 - **Localisation** : https://maps.google.com/?q=14.450926,-17.002497
+# residence-habili-saly
