@@ -4,7 +4,7 @@
 
 const express = require('express');
 const router = express.Router();
-const { lireMessages, marquerMessageTraite, lireVilla } = require('../data/store');
+const { lireMessages, marquerMessageTraite, annulerMessage, lireVilla } = require('../data/store');
 
 function estConnecte(req) {
   return req.session && req.session.adminConnecte === true;
@@ -46,13 +46,23 @@ router.post('/deconnexion', (req, res) => {
 // --- Tableau de bord ---
 router.get('/', exigerConnexion, async (req, res) => {
   const messages = await lireMessages();
-  res.render('admin-dashboard', { messages });
+  res.render('admin-dashboard', { messages, erreur: req.query.erreur || null });
 });
 
 // --- Marquer une demande comme traitée / non traitée ---
 router.post('/messages/:id/traite', exigerConnexion, async (req, res) => {
   const traite = req.body.traite === '1';
-  await marquerMessageTraite(req.params.id, traite);
+  const resultat = await marquerMessageTraite(req.params.id, traite);
+  if (resultat && resultat.erreur) {
+    return res.redirect('/admin?erreur=' + encodeURIComponent(resultat.erreur));
+  }
+  res.redirect('/admin');
+});
+
+// --- Annuler une demande (libère les dates) / la réactiver ---
+router.post('/messages/:id/annuler', exigerConnexion, async (req, res) => {
+  const annulee = req.body.annulee === '1';
+  await annulerMessage(req.params.id, annulee);
   res.redirect('/admin');
 });
 
