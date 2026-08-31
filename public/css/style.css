@@ -469,6 +469,73 @@ ul { list-style: none; }
 .privatisation__prix { font-family: var(--police-titres); font-size: 2rem; color: var(--terracotta-clair); font-weight: 700; }
 .privatisation__unite { color: rgba(244,237,225,0.7); margin-bottom: 1rem; text-transform: uppercase; font-size: .8rem; letter-spacing: .08em; }
 
+/* --- Section Piscine (carrousel) --- */
+.section-piscine__carte {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5rem;
+    align-items: center;
+}
+.carrousel {
+    position: relative;
+    border-radius: var(--rayon);
+    overflow: hidden;
+    box-shadow: var(--ombre);
+    background: var(--encre);
+    aspect-ratio: 4 / 3;
+}
+.carrousel__piste {
+    display: flex;
+    height: 100%;
+    transition: transform .4s ease;
+}
+.carrousel__piste img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+.carrousel__bouton {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255,255,255,0.85);
+    color: var(--encre);
+    font-size: 1.4rem;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.carrousel__bouton:hover { background: var(--blanc); }
+.carrousel__bouton--precedent { left: 12px; }
+.carrousel__bouton--suivant { right: 12px; }
+.carrousel__bouton--ajouter {
+    left: 50%;
+    top: auto;
+    bottom: 12px;
+    transform: translateX(-50%);
+    background: var(--terracotta);
+    color: var(--blanc);
+    font-weight: 700;
+}
+.carrousel__bouton--ajouter:hover { background: var(--terracotta-fonce); }
+.carrousel__compteur {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    background: rgba(43,36,31,0.6);
+    color: var(--blanc);
+    font-size: .8rem;
+    padding: 3px 10px;
+    border-radius: 20px;
+}
+
 /* --- Galerie --- */
 .grille-galerie {
     display: grid;
@@ -660,6 +727,7 @@ textarea { resize: vertical; }
     .fiche-hebergement { grid-template-columns: 1fr; }
     .fiche-hebergement--inverse .fiche-hebergement__images,
     .fiche-hebergement--inverse .fiche-hebergement__contenu { order: initial; }
+    .section-piscine__carte { grid-template-columns: 1fr; }
     .contact-grille { grid-template-columns: 1fr; }
     .grille-galerie { grid-template-columns: repeat(3, 1fr); }
     .pied__grille { grid-template-columns: 1fr 1fr; }

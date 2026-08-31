@@ -63,4 +63,44 @@ Consultez toutes les demandes sur : ${process.env.SITE_URL || ''}/admin
   }
 }
 
-module.exports = { envoyerNotificationReservation };
+function formaterDate(date) {
+  return new Date(date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
+}
+
+async function envoyerConfirmationClient(demande) {
+  if (!transporteur) return;
+  if (!demande.email) {
+    console.warn('⚠️  Impossible d\'envoyer la confirmation : aucune adresse email fournie par le client.');
+    return;
+  }
+
+  const expediteur = process.env.GMAIL_USER;
+
+  const texte = `Bonjour ${demande.nom},
+
+Bonne nouvelle : votre demande de réservation à la Résidence Habili Saly a été validée !
+
+Séjour : du ${formaterDate(demande.dateArrivee)} au ${formaterDate(demande.dateDepart)}
+Type d'hébergement : ${demande.typeHebergement}
+
+Pour finaliser votre réservation, merci d'effectuer le règlement via Wave Business.
+Un lien de paiement Wave vous sera transmis séparément si ce n'est pas déjà fait.
+Délai de paiement : 48h.
+
+À très bientôt,
+L'équipe de la Résidence Habili Saly
+`;
+
+  try {
+    await transporteur.sendMail({
+      from: `"Résidence Habili Saly" <${expediteur}>`,
+      to: demande.email,
+      subject: 'Votre réservation à la Résidence Habili Saly est confirmée',
+      text: texte,
+    });
+  } catch (err) {
+    console.error("❌ Échec de l'envoi de l'email de confirmation au client :", err.message);
+  }
+}
+
+module.exports = { envoyerNotificationReservation, envoyerConfirmationClient };

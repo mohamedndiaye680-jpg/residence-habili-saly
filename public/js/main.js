@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
     initMenuMobile();
     initLightbox();
     initFormulaireContact();
+    initCarrouselPiscine();
 });
 
 /* ---------------------------------------------------------
@@ -187,5 +188,46 @@ function initFormulaireContact() {
         conteneur.appendChild(liste);
         form.parentElement.insertBefore(conteneur, form);
         conteneur.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+}
+
+/* ---------------------------------------------------------
+   Carrousel de la section Piscine (page Chambres & Suites)
+--------------------------------------------------------- */
+function initCarrouselPiscine() {
+    var piste = document.getElementById('carrouselPiscinePiste');
+    if (!piste) return; // La section n'existe pas sur cette page
+
+    var images = piste.querySelectorAll('img');
+    var boutonPrecedent = document.getElementById('carrouselPiscinePrecedent');
+    var boutonSuivant = document.getElementById('carrouselPiscineSuivant');
+    var compteur = document.getElementById('carrouselPiscineCompteur');
+    var indexActuel = 0;
+
+    if (images.length <= 1) return; // Rien à faire défiler
+
+    function allerA(index) {
+        indexActuel = (index + images.length) % images.length;
+        piste.style.transform = 'translateX(-' + (indexActuel * 100) + '%)';
+        if (compteur) {
+            compteur.textContent = (indexActuel + 1) + ' / ' + images.length;
+        }
+    }
+
+    if (boutonPrecedent) {
+        boutonPrecedent.addEventListener('click', function () { allerA(indexActuel - 1); });
+    }
+    if (boutonSuivant) {
+        boutonSuivant.addEventListener('click', function () { allerA(indexActuel + 1); });
+    }
+
+    // Navigation au clavier quand le carrousel a le focus
+    var carrousel = document.getElementById('carrouselPiscine');
+    if (carrousel) {
+        carrousel.setAttribute('tabindex', '0');
+        carrousel.addEventListener('keydown', function (e) {
+            if (e.key === 'ArrowLeft') allerA(indexActuel - 1);
+            if (e.key === 'ArrowRight') allerA(indexActuel + 1);
+        });
     }
 }

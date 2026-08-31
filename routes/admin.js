@@ -5,6 +5,7 @@
 const express = require('express');
 const router = express.Router();
 const { lireMessages, marquerMessageTraite, annulerMessage, lireVilla } = require('../data/store');
+const { envoyerConfirmationClient } = require('../data/mailer');
 
 function estConnecte(req) {
   return req.session && req.session.adminConnecte === true;
@@ -55,6 +56,11 @@ router.post('/messages/:id/traite', exigerConnexion, async (req, res) => {
   const resultat = await marquerMessageTraite(req.params.id, traite);
   if (resultat && resultat.erreur) {
     return res.redirect('/admin?erreur=' + encodeURIComponent(resultat.erreur));
+  }
+  // Envoie un email de confirmation au client uniquement quand on VALIDE la demande
+  // (pas quand on la remet en "non traité"), et seulement s'il a laissé un email.
+  if (traite && resultat) {
+    envoyerConfirmationClient(resultat);
   }
   res.redirect('/admin');
 });

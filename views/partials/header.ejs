@@ -5,9 +5,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= pageTitle %></title>
     <meta name="description" content="<%= pageDescription %>">
+    <link rel="canonical" href="<%= (villa.contact && villa.siteUrl) || 'https://residence-habili-saly.onrender.com' %><%= currentPath %>">
+
+    <!-- Open Graph (aperçu quand le lien est partagé) -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="<%= villa.nom %>">
+    <meta property="og:title" content="<%= pageTitle %>">
+    <meta property="og:description" content="<%= pageDescription %>">
+    <meta property="og:image" content="https://residence-habili-saly.onrender.com/images/villa/facade-1.jpg">
+    <meta property="og:locale" content="fr_FR">
+    <meta name="twitter:card" content="summary_large_image">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Mulish:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Données structurées pour aider Google à comprendre qu'il s'agit d'un hébergement -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "LodgingBusiness",
+        "name": "<%= villa.nom %>",
+        "description": "<%= villa.description %>",
+        "image": "https://residence-habili-saly.onrender.com/images/villa/facade-1.jpg",
+        "telephone": "<%= villa.contact.telephones[0] %>",
+        "email": "<%= villa.contact.email %>",
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "<%= villa.adresse.libelle %>",
+            "addressLocality": "<%= villa.adresse.ville %>",
+            "addressCountry": "<%= villa.adresse.pays %>"
+        },
+        "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": <%= villa.localisation.latitude %>,
+            "longitude": <%= villa.localisation.longitude %>
+        },
+        "url": "https://residence-habili-saly.onrender.com"
+    }
+    </script>
 </head>
 <body>
 <a class="lien-evitement" href="#contenu-principal">Aller au contenu principal</a>
