@@ -4,8 +4,7 @@
 
 const express = require('express');
 const router = express.Router();
-const { lireMessages, marquerMessageTraite, annulerMessage, lireVilla } = require('../data/store');
-const { envoyerConfirmationClient } = require('../data/mailer');
+const { lireMessages, marquerMessageTraite, lireVilla } = require('../data/store');
 
 function estConnecte(req) {
   return req.session && req.session.adminConnecte === true;
@@ -47,28 +46,13 @@ router.post('/deconnexion', (req, res) => {
 // --- Tableau de bord ---
 router.get('/', exigerConnexion, async (req, res) => {
   const messages = await lireMessages();
-  res.render('admin-dashboard', { messages, erreur: req.query.erreur || null });
+  res.render('admin-dashboard', { messages });
 });
 
 // --- Marquer une demande comme traitée / non traitée ---
 router.post('/messages/:id/traite', exigerConnexion, async (req, res) => {
   const traite = req.body.traite === '1';
-  const resultat = await marquerMessageTraite(req.params.id, traite);
-  if (resultat && resultat.erreur) {
-    return res.redirect('/admin?erreur=' + encodeURIComponent(resultat.erreur));
-  }
-  // Envoie un email de confirmation au client uniquement quand on VALIDE la demande
-  // (pas quand on la remet en "non traité"), et seulement s'il a laissé un email.
-  if (traite && resultat) {
-    envoyerConfirmationClient(resultat);
-  }
-  res.redirect('/admin');
-});
-
-// --- Annuler une demande (libère les dates) / la réactiver ---
-router.post('/messages/:id/annuler', exigerConnexion, async (req, res) => {
-  const annulee = req.body.annulee === '1';
-  await annulerMessage(req.params.id, annulee);
+  await marquerMessageTraite(req.params.id, traite);
   res.redirect('/admin');
 });
 

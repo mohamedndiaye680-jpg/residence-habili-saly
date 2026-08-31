@@ -84,23 +84,6 @@
                     </div>
                 </div>
 
-                <div class="champ-groupe">
-                    <div class="champ">
-                        <label for="date_arrivee">Date d'arrivée *</label>
-                        <input type="date" id="date_arrivee" name="date_arrivee" required
-                               value="<%= anciennesValeurs.date_arrivee || '' %>">
-                    </div>
-                    <div class="champ">
-                        <label for="date_depart">Date de rentrée *</label>
-                        <input type="date" id="date_depart" name="date_depart" required
-                               value="<%= anciennesValeurs.date_depart || '' %>">
-                    </div>
-                </div>
-                <div class="champ">
-                    <div id="calendrierDisponibilite" class="calendrier-dispo"></div>
-                    <p class="contact-formulaire__note">Les jours grisés sont déjà réservés.</p>
-                </div>
-
                 <div class="champ">
                     <label for="type_hebergement">Type d'hébergement souhaité *</label>
                     <select id="type_hebergement" name="type_hebergement" required>
@@ -121,142 +104,9 @@
 
                 <button type="submit" class="bouton bouton--accent bouton--large">Envoyer la demande</button>
                 <p class="contact-formulaire__note">* Champs obligatoires. Vos informations ne sont utilisées que pour traiter votre demande.</p>
-                <p class="contact-formulaire__note contact-formulaire__note--paiement">
-                    Aucun paiement sur ce site. Après votre inscription, vous recevrez un email avec le lien Wave Business pour régler votre inscription. Délai de paiement : 48h.
-                </p>
             </form>
         </div>
     </div>
 </section>
-
-<style>
-    .calendrier-dispo {
-        max-width: 340px;
-        border: 1px solid var(--sable-fonce, #ddd);
-        border-radius: 8px;
-        padding: 14px;
-        background: #fff;
-    }
-    .calendrier-dispo__entete {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 10px;
-        font-weight: 700;
-    }
-    .calendrier-dispo__entete button {
-        background: none;
-        border: 1px solid var(--sable-fonce, #ddd);
-        border-radius: 6px;
-        width: 28px;
-        height: 28px;
-        cursor: pointer;
-    }
-    .calendrier-dispo__grille {
-        display: grid;
-        grid-template-columns: repeat(7, 1fr);
-        gap: 4px;
-        text-align: center;
-        font-size: 0.85rem;
-    }
-    .calendrier-dispo__jour-label {
-        font-weight: 700;
-        color: var(--encre-doux, #777);
-        padding: 4px 0;
-    }
-    .calendrier-dispo__case {
-        padding: 6px 0;
-        border-radius: 6px;
-    }
-    .calendrier-dispo__case--reserve {
-        background: #f1c9c0;
-        color: #8a3b2b;
-        text-decoration: line-through;
-    }
-    .calendrier-dispo__case--passe {
-        color: #ccc;
-    }
-    .calendrier-dispo__case--vide { visibility: hidden; }
-</style>
-<script>
-(function () {
-    const conteneur = document.getElementById('calendrierDisponibilite');
-    const champArrivee = document.getElementById('date_arrivee');
-    const champDepart = document.getElementById('date_depart');
-    let periodesReservees = [];
-    let moisAffiche = new Date();
-    moisAffiche.setDate(1);
-
-    function dateDansPeriodeReservee(date) {
-        return periodesReservees.some(function (p) {
-            const debut = new Date(p.debut);
-            const fin = new Date(p.fin);
-            return date >= new Date(debut.toDateString()) && date < new Date(fin.toDateString());
-        });
-    }
-
-    function dessinerCalendrier() {
-        const annee = moisAffiche.getFullYear();
-        const mois = moisAffiche.getMonth();
-        const premierJour = new Date(annee, mois, 1);
-        const nomMois = premierJour.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
-        const decalage = (premierJour.getDay() + 6) % 7; // lundi = 0
-        const nbJours = new Date(annee, mois + 1, 0).getDate();
-        const aujourdHui = new Date(); aujourdHui.setHours(0,0,0,0);
-
-        let html = '<div class="calendrier-dispo__entete">' +
-            '<button type="button" id="moisPrecedent">&#8592;</button>' +
-            '<span>' + nomMois.charAt(0).toUpperCase() + nomMois.slice(1) + '</span>' +
-            '<button type="button" id="moisSuivant">&#8594;</button>' +
-            '</div><div class="calendrier-dispo__grille">';
-
-        ['Lu','Ma','Me','Je','Ve','Sa','Di'].forEach(function (j) {
-            html += '<div class="calendrier-dispo__jour-label">' + j + '</div>';
-        });
-        for (let i = 0; i < decalage; i++) {
-            html += '<div class="calendrier-dispo__case calendrier-dispo__case--vide"></div>';
-        }
-        for (let j = 1; j <= nbJours; j++) {
-            const date = new Date(annee, mois, j);
-            const reserve = dateDansPeriodeReservee(date);
-            const passe = date < aujourdHui;
-            let classe = 'calendrier-dispo__case';
-            if (reserve) classe += ' calendrier-dispo__case--reserve';
-            else if (passe) classe += ' calendrier-dispo__case--passe';
-            html += '<div class="' + classe + '">' + j + '</div>';
-        }
-        html += '</div>';
-        conteneur.innerHTML = html;
-
-        document.getElementById('moisPrecedent').addEventListener('click', function () {
-            moisAffiche.setMonth(moisAffiche.getMonth() - 1);
-            dessinerCalendrier();
-        });
-        document.getElementById('moisSuivant').addEventListener('click', function () {
-            moisAffiche.setMonth(moisAffiche.getMonth() + 1);
-            dessinerCalendrier();
-        });
-    }
-
-    fetch('/api/dates-reservees')
-        .then(function (r) { return r.json(); })
-        .then(function (data) {
-            periodesReservees = data || [];
-            dessinerCalendrier();
-        })
-        .catch(function () {
-            dessinerCalendrier();
-        });
-
-    // Empêche de choisir une date de départ avant ou égale à la date d'arrivée
-    champArrivee.addEventListener('change', function () {
-        if (champArrivee.value) {
-            const lendemain = new Date(champArrivee.value);
-            lendemain.setDate(lendemain.getDate() + 1);
-            champDepart.min = lendemain.toISOString().split('T')[0];
-        }
-    });
-})();
-</script>
 
 <%- include('partials/footer') %>

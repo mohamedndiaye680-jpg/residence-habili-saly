@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const { body, validationResult } = require('express-validator');
-const { lireVilla, ajouterMessage, lirePeriodesReservees } = require('../data/store');
+const { lireVilla, ajouterMessage } = require('../data/store');
 const { envoyerNotificationReservation } = require('../data/mailer');
 
 // --- GET /api/villa : informations générales ---
@@ -27,17 +27,6 @@ router.get('/gallery', (req, res) => {
   res.json(villa.galerie);
 });
 
-// --- GET /api/dates-reservees : plages de dates déjà prises (pour le calendrier) ---
-router.get('/dates-reservees', async (req, res) => {
-  try {
-    const periodes = await lirePeriodesReservees();
-    res.json(periodes);
-  } catch (err) {
-    console.error('Erreur lors de la lecture des périodes réservées :', err);
-    res.status(500).json([]);
-  }
-});
-
 // --- POST /api/contact : réception d'une demande de réservation/contact ---
 const regleValidation = [
   body('nom')
@@ -55,18 +44,6 @@ const regleValidation = [
   body('type_hebergement')
     .trim()
     .notEmpty().withMessage('Merci de préciser le type d\'hébergement souhaité.'),
-  body('date_arrivee')
-    .notEmpty().withMessage('La date d\'arrivée est obligatoire.')
-    .isISO8601().withMessage('La date d\'arrivée est invalide.'),
-  body('date_depart')
-    .notEmpty().withMessage('La date de départ est obligatoire.')
-    .isISO8601().withMessage('La date de départ est invalide.')
-    .custom((value, { req }) => {
-      if (new Date(value) <= new Date(req.body.date_arrivee)) {
-        throw new Error('La date de départ doit être après la date d\'arrivée.');
-      }
-      return true;
-    }),
   body('message')
     .trim()
     .notEmpty().withMessage('Le message ne peut pas être vide.')
@@ -96,17 +73,12 @@ router.post('/contact', regleValidation, async (req, res) => {
   }
 
   try {
-    const dateArrivee = new Date(req.body.date_arrivee);
-    const dateDepart = new Date(req.body.date_depart);
-
     const demande = {
       nom: req.body.nom.trim(),
       telephone: req.body.telephone.trim(),
       email: (req.body.email || '').trim(),
       typeHebergement: req.body.type_hebergement.trim(),
       message: req.body.message.trim(),
-      dateArrivee,
-      dateDepart,
     };
 
     const message = await ajouterMessage(demande);

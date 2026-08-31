@@ -4,7 +4,6 @@ require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const session = require('express-session');
-const MongoStore = require('connect-mongo').default || require('connect-mongo');
 
 const pagesRouter = require('./routes/pages');
 const apiRouter = require('./routes/api');
@@ -32,7 +31,6 @@ app.use(
     secret: process.env.SESSION_SECRET || 'residence-habili-saly-cle-secrete',
     resave: false,
     saveUninitialized: false,
-    store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI }),
     cookie: { maxAge: 1000 * 60 * 60 * 8 }, // 8 heures
   })
 );

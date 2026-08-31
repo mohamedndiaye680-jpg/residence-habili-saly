@@ -1,1 +1,85 @@
-// data/store.js// Couche d'accès aux données.// - Les infos de la villa restent dans data/villa.json (peu changeant, simple à éditer).// - Les messages/réservations sont stockés dans MongoDB (persistant, ne disparaît pas//   au redémarrage du serveur). Si MongoDB n'est pas configuré (pas de MONGODB_URI),//   on utilise en secours le fichier data/messages.json, comme avant.const fs = require('fs');const path = require('path');const mongoose = require('mongoose');const Message = require('../models/Message');const VILLA_PATH = path.join(__dirname, 'villa.json');const MESSAGES_PATH = path.join(__dirname, 'messages.json');function lireVilla() {  const brut = fs.readFileSync(VILLA_PATH, 'utf-8');  return JSON.parse(brut);}function mongoConnecte() {  return mongoose.connection.readyState === 1;}// --- Secours fichier JSON (utilisé seulement si MongoDB n'est pas connecté) ---function lireMessagesFichier() {  try {    const brut = fs.readFileSync(MESSAGES_PATH, 'utf-8');    return JSON.parse(brut);  } catch (err) {    return [];  }}function ajouterMessageFichier(message) {  const messages = lireMessagesFichier();  const nouveauMessage = {    id: Date.now(),    dateReception: new Date().toISOString(),    traite: false,    ...message,  };  messages.push(nouveauMessage);  fs.writeFileSync(MESSAGES_PATH, JSON.stringify(messages, null, 2), 'utf-8');  return nouveauMessage;}// --- Fonctions principales (utilisées par les routes) ---// Vérifie si une plage de dates chevauche une réservation CONFIRMÉE (traite = true, non annulée).// Deux séjours se chevauchent si l'un commence avant que l'autre ne soit terminé.async function periodeConfirmeeEnConflit(dateArrivee, dateDepart, idAIgnorer) {  if (mongoConnecte()) {    const filtre = {      traite: true,      annulee: { $ne: true },      dateArrivee: { $lt: dateDepart },      dateDepart: { $gt: dateArrivee },    };    if (idAIgnorer) filtre._id = { $ne: idAIgnorer };    return Message.findOne(filtre).lean();  }  const messages = lireMessagesFichier();  return messages.find((m) => {    if (!m.traite || m.annulee) return false;    if (idAIgnorer && String(m.id) === String(idAIgnorer)) return false;    const arriveeExistante = new Date(m.dateArrivee);    const departExistant = new Date(m.dateDepart);    return arriveeExistante < dateDepart && departExistant > dateArrivee;  });}// Renvoie la liste des plages CONFIRMÉES (traite = true, non annulées), pour le calendrier.async function lirePeriodesReservees() {  if (mongoConnecte()) {    const messages = await Message.find({ traite: true, annulee: { $ne: true } })      .select('dateArrivee dateDepart -_id')      .lean();    return messages.map((m) => ({ debut: m.dateArrivee, fin: m.dateDepart }));  }  const messages = lireMessagesFichier();  return messages    .filter((m) => m.traite && !m.annulee)    .map((m) => ({ debut: m.dateArrivee, fin: m.dateDepart }));}async function ajouterMessage(message) {  if (mongoConnecte()) {    const nouveauMessage = await Message.create(message);    return nouveauMessage;  }  return ajouterMessageFichier(message);}async function lireMessages() {  if (mongoConnecte()) {    return Message.find().sort({ dateReception: -1 }).lean();  }  return lireMessagesFichier().sort(    (a, b) => new Date(b.dateReception) - new Date(a.dateReception)  );}async function marquerMessageTraite(id, traite) {  if (traite) {    const message = mongoConnecte()      ? await Message.findById(id).lean()      : lireMessagesFichier().find((m) => String(m.id) === String(id));    if (message) {      const conflit = await periodeConfirmeeEnConflit(        new Date(message.dateArrivee),        new Date(message.dateDepart),        id      );      if (conflit) {        return { erreur: 'Ces dates chevauchent une autre réservation déjà confirmée.' };      }    }  }  if (mongoConnecte()) {    return Message.findByIdAndUpdate(id, { traite }, { new: true }).lean();  }  const messages = lireMessagesFichier();  const msg = messages.find((m) => String(m.id) === String(id));  if (msg) {    msg.traite = traite;    fs.writeFileSync(MESSAGES_PATH, JSON.stringify(messages, null, 2), 'utf-8');  }  return msg;}async function annulerMessage(id, annulee) {  if (mongoConnecte()) {    return Message.findByIdAndUpdate(id, { annulee }, { new: true }).lean();  }  const messages = lireMessagesFichier();  const msg = messages.find((m) => String(m.id) === String(id));  if (msg) {    msg.annulee = annulee;    fs.writeFileSync(MESSAGES_PATH, JSON.stringify(messages, null, 2), 'utf-8');  }  return msg;}module.exports = {  lireVilla,  lireMessages,  ajouterMessage,  marquerMessageTraite,  annulerMessage,  lirePeriodesReservees,};
+// data/store.js
+// Couche d'accès aux données.
+// - Les infos de la villa restent dans data/villa.json (peu changeant, simple à éditer).
+// - Les messages/réservations sont stockés dans MongoDB (persistant, ne disparaît pas
+//   au redémarrage du serveur). Si MongoDB n'est pas configuré (pas de MONGODB_URI),
+//   on utilise en secours le fichier data/messages.json, comme avant.
+
+const fs = require('fs');
+const path = require('path');
+const mongoose = require('mongoose');
+const Message = require('../models/Message');
+
+const VILLA_PATH = path.join(__dirname, 'villa.json');
+const MESSAGES_PATH = path.join(__dirname, 'messages.json');
+
+function lireVilla() {
+  const brut = fs.readFileSync(VILLA_PATH, 'utf-8');
+  return JSON.parse(brut);
+}
+
+function mongoConnecte() {
+  return mongoose.connection.readyState === 1;
+}
+
+// --- Secours fichier JSON (utilisé seulement si MongoDB n'est pas connecté) ---
+function lireMessagesFichier() {
+  try {
+    const brut = fs.readFileSync(MESSAGES_PATH, 'utf-8');
+    return JSON.parse(brut);
+  } catch (err) {
+    return [];
+  }
+}
+
+function ajouterMessageFichier(message) {
+  const messages = lireMessagesFichier();
+  const nouveauMessage = {
+    id: Date.now(),
+    dateReception: new Date().toISOString(),
+    traite: false,
+    ...message,
+  };
+  messages.push(nouveauMessage);
+  fs.writeFileSync(MESSAGES_PATH, JSON.stringify(messages, null, 2), 'utf-8');
+  return nouveauMessage;
+}
+
+// --- Fonctions principales (utilisées par les routes) ---
+
+async function ajouterMessage(message) {
+  if (mongoConnecte()) {
+    const nouveauMessage = await Message.create(message);
+    return nouveauMessage;
+  }
+  return ajouterMessageFichier(message);
+}
+
+async function lireMessages() {
+  if (mongoConnecte()) {
+    return Message.find().sort({ dateReception: -1 }).lean();
+  }
+  return lireMessagesFichier().sort(
+    (a, b) => new Date(b.dateReception) - new Date(a.dateReception)
+  );
+}
+
+async function marquerMessageTraite(id, traite) {
+  if (mongoConnecte()) {
+    return Message.findByIdAndUpdate(id, { traite }, { new: true }).lean();
+  }
+  const messages = lireMessagesFichier();
+  const msg = messages.find((m) => String(m.id) === String(id));
+  if (msg) {
+    msg.traite = traite;
+    fs.writeFileSync(MESSAGES_PATH, JSON.stringify(messages, null, 2), 'utf-8');
+  }
+  return msg;
+}
+
+module.exports = {
+  lireVilla,
+  lireMessages,
+  ajouterMessage,
+  marquerMessageTraite,
+};

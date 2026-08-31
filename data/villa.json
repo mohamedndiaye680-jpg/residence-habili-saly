@@ -58,6 +58,11 @@
       "images": ["/images/rooms/premium-salon-1.jpg", "/images/rooms/premium-salon-2.jpg", "/images/rooms/premium-chambre-1.jpg"]
     }
   ],
+  "piscine": {
+    "nom": "Piscine",
+    "description": "Une piscine à débordement au carrelage bleu mosaïque, entourée de gazon synthétique et d'une terrasse ombragée — l'endroit idéal pour se détendre après une journée à la plage ou en réunion.",
+    "images": ["/images/villa/piscine-1.jpg"]
+  },
   "privatisation": {
     "nom": "Privatisation complète de la résidence",
     "tarif": 350000,
@@ -74,6 +79,7 @@
   "galerie": [
     { "src": "/images/villa/facade-1.jpg", "legende": "La façade de la Résidence Habili Saly", "categorie": "exterieur" },
     { "src": "/images/villa/terrasse-1.jpg", "legende": "Terrasse et coursive extérieure", "categorie": "exterieur" },
+    { "src": "/images/villa/piscine-1.jpg", "legende": "La piscine de la Résidence Habili Saly", "categorie": "piscine" },
     { "src": "/images/rooms/standard-1.jpg", "legende": "Chambre Standard", "categorie": "chambres" },
     { "src": "/images/rooms/suite-1.jpg", "legende": "Suite - ambiance soirée", "categorie": "chambres" },
     { "src": "/images/rooms/suite-2.jpg", "legende": "Suite - vue d'ensemble", "categorie": "chambres" },

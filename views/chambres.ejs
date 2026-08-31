@@ -50,6 +50,29 @@
     </div>
 </section>
 
+<section class="section">
+    <div class="conteneur section-piscine__carte">
+        <div class="carrousel" id="carrouselPiscine" aria-roledescription="carrousel" aria-label="Photos de la piscine">
+            <div class="carrousel__piste" id="carrouselPiscinePiste">
+                <% villa.piscine.images.forEach(function(img) { %>
+                    <img src="<%= img %>" alt="<%= villa.piscine.nom %>" loading="lazy">
+                <% }); %>
+            </div>
+            <% if (villa.piscine.images.length > 1) { %>
+                <button type="button" class="carrousel__bouton carrousel__bouton--precedent" id="carrouselPiscinePrecedent" aria-label="Photo précédente">&#8249;</button>
+                <button type="button" class="carrousel__bouton carrousel__bouton--suivant" id="carrouselPiscineSuivant" aria-label="Photo suivante">&#8250;</button>
+                <span class="carrousel__compteur" id="carrouselPiscineCompteur">1 / <%= villa.piscine.images.length %></span>
+            <% } %>
+        </div>
+        <div>
+            <p class="eyebrow">Détente</p>
+            <h2><%= villa.piscine.nom %></h2>
+            <p><%= villa.piscine.description %></p>
+            <a href="/galerie" class="bouton bouton--primaire">Voir toutes les photos</a>
+        </div>
+    </div>
+</section>
+
 <section class="section privatisation">
     <div class="conteneur privatisation__carte">
         <div>
