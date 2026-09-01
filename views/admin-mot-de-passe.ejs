@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modifier le mot de passe — Résidence Habili Saly</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Mulish:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .admin-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--sable);
+            padding: 24px;
+        }
+        .admin-carte {
+            background: var(--blanc);
+            border-radius: var(--rayon);
+            box-shadow: var(--ombre);
+            padding: 40px;
+            width: 100%;
+            max-width: 420px;
+        }
+        .admin-carte h1 {
+            font-family: var(--police-titres);
+            font-size: 1.4rem;
+            color: var(--encre);
+            margin: 0 0 8px;
+            text-align: center;
+        }
+        .admin-carte__sous-titre {
+            text-align: center;
+            color: var(--encre-doux);
+            font-size: 0.9rem;
+            margin: 0 0 24px;
+        }
+        .admin-champ {
+            margin-bottom: 18px;
+        }
+        .admin-champ label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--encre);
+        }
+        .admin-champ input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--sable-fonce);
+            border-radius: var(--rayon-petit);
+            font-family: var(--police-texte);
+            font-size: 1rem;
+        }
+        .admin-erreur {
+            background: #fbe9e5;
+            color: var(--erreur);
+            padding: 12px 14px;
+            border-radius: var(--rayon-petit);
+            margin-bottom: 18px;
+            font-size: 0.9rem;
+        }
+        .admin-succes {
+            background: #e6f3ea;
+            color: var(--succes);
+            padding: 12px 14px;
+            border-radius: var(--rayon-petit);
+            margin-bottom: 18px;
+            font-size: 0.9rem;
+        }
+        .admin-carte button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: var(--rayon-petit);
+            background: var(--terracotta);
+            color: var(--blanc);
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        .admin-carte button:hover { background: var(--terracotta-fonce); }
+        .admin-retour {
+            display: block;
+            text-align: center;
+            margin-top: 18px;
+            color: var(--encre-doux);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+<div class="admin-page">
+    <div class="admin-carte">
+        <h1>Modifier le mot de passe</h1>
+        <p class="admin-carte__sous-titre">Choisissez un mot de passe personnel pour l'espace admin.</p>
+
+        <% if (erreur) { %>
+            <div class="admin-erreur"><%= erreur %></div>
+        <% } %>
+        <% if (succes) { %>
+            <div class="admin-succes">Mot de passe modifié avec succès. Utilisez-le dès votre prochaine connexion.</div>
+        <% } %>
+
+        <form method="POST" action="/admin/mot-de-passe">
+            <div class="admin-champ">
+                <label for="motDePasseActuel">Mot de passe actuel</label>
+                <input type="password" id="motDePasseActuel" name="motDePasseActuel" required autofocus>
+            </div>
+            <div class="admin-champ">
+                <label for="nouveauMotDePasse">Nouveau mot de passe</label>
+                <input type="password" id="nouveauMotDePasse" name="nouveauMotDePasse" required minlength="6">
+            </div>
+            <div class="admin-champ">
+                <label for="confirmationMotDePasse">Confirmer le nouveau mot de passe</label>
+                <input type="password" id="confirmationMotDePasse" name="confirmationMotDePasse" required minlength="6">
+            </div>
+            <button type="submit">Enregistrer le nouveau mot de passe</button>
+        </form>
+
+        <a href="/admin" class="admin-retour">&larr; Retour au tableau de bord</a>
+    </div>
+</div>
+</body>
+</html>

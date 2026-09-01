@@ -33,6 +33,19 @@
             cursor: pointer;
             color: var(--encre-doux);
         }
+        .admin-entete__actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .admin-entete__lien {
+            color: var(--ocean);
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .admin-entete__lien:hover { text-decoration: underline; }
         .admin-corps {
             max-width: var(--largeur-max);
             margin: 32px auto;
@@ -111,9 +124,12 @@
 <body>
 <div class="admin-entete">
     <h1>Demandes de réservation (<%= messages.length %>)</h1>
-    <form method="POST" action="/admin/deconnexion">
-        <button type="submit">Se déconnecter</button>
-    </form>
+    <div class="admin-entete__actions">
+        <a href="/admin/mot-de-passe" class="admin-entete__lien">Modifier le mot de passe</a>
+        <form method="POST" action="/admin/deconnexion">
+            <button type="submit">Se déconnecter</button>
+        </form>
+    </div>
 </div>
 
 <div class="admin-corps">

@@ -1,10 +1,12 @@
 // routes/admin.js
-// Zone d'administration protégée par mot de passe (variable d'environnement ADMIN_PASSWORD).
-// Permet de consulter les demandes de réservation reçues via le formulaire de contact.
+// Zone d'administration protégée par mot de passe.
+// Permet de consulter les demandes de réservation reçues via le formulaire de contact,
+// et de changer le mot de passe d'accès (voir data/adminAuth.js pour le détail).
 
 const express = require('express');
 const router = express.Router();
-const { lireMessages, marquerMessageTraite, lireVilla } = require('../data/store');
+const { lireMessages, marquerMessageTraite } = require('../data/store');
+const { verifierMotDePasse, definirNouveauMotDePasse } = require('../data/adminAuth');
 
 function estConnecte(req) {
   return req.session && req.session.adminConnecte === true;
@@ -21,22 +23,22 @@ router.get('/connexion', (req, res) => {
   res.render('admin-login', { erreur: null });
 });
 
-router.post('/connexion', (req, res) => {
-  const motDePasseAttendu = process.env.ADMIN_PASSWORD;
+router.post('/connexion', async (req, res) => {
+  try {
+    const motDePasseValide = await verifierMotDePasse(req.body.motDePasse || '');
 
-  if (!motDePasseAttendu) {
+    if (motDePasseValide) {
+      req.session.adminConnecte = true;
+      return res.redirect('/admin');
+    }
+
+    return res.render('admin-login', { erreur: 'Mot de passe incorrect.' });
+  } catch (err) {
+    console.error('Erreur lors de la vérification du mot de passe admin :', err);
     return res.render('admin-login', {
-      erreur:
-        "Aucun mot de passe admin n'est configuré sur le serveur (ADMIN_PASSWORD manquant).",
+      erreur: 'Une erreur est survenue, merci de réessayer.',
     });
   }
-
-  if (req.body.motDePasse === motDePasseAttendu) {
-    req.session.adminConnecte = true;
-    return res.redirect('/admin');
-  }
-
-  return res.render('admin-login', { erreur: 'Mot de passe incorrect.' });
 });
 
 router.post('/deconnexion', (req, res) => {
@@ -54,6 +56,50 @@ router.post('/messages/:id/traite', exigerConnexion, async (req, res) => {
   const traite = req.body.traite === '1';
   await marquerMessageTraite(req.params.id, traite);
   res.redirect('/admin');
+});
+
+// --- Modifier le mot de passe ---
+router.get('/mot-de-passe', exigerConnexion, (req, res) => {
+  res.render('admin-mot-de-passe', { erreur: null, succes: false });
+});
+
+router.post('/mot-de-passe', exigerConnexion, async (req, res) => {
+  const { motDePasseActuel, nouveauMotDePasse, confirmationMotDePasse } = req.body;
+
+  try {
+    const motDePasseActuelValide = await verifierMotDePasse(motDePasseActuel || '');
+
+    if (!motDePasseActuelValide) {
+      return res.render('admin-mot-de-passe', {
+        erreur: 'Le mot de passe actuel est incorrect.',
+        succes: false,
+      });
+    }
+
+    if (!nouveauMotDePasse || nouveauMotDePasse.length < 6) {
+      return res.render('admin-mot-de-passe', {
+        erreur: 'Le nouveau mot de passe doit contenir au moins 6 caractères.',
+        succes: false,
+      });
+    }
+
+    if (nouveauMotDePasse !== confirmationMotDePasse) {
+      return res.render('admin-mot-de-passe', {
+        erreur: 'La confirmation ne correspond pas au nouveau mot de passe.',
+        succes: false,
+      });
+    }
+
+    await definirNouveauMotDePasse(nouveauMotDePasse);
+
+    return res.render('admin-mot-de-passe', { erreur: null, succes: true });
+  } catch (err) {
+    console.error('Erreur lors du changement de mot de passe admin :', err);
+    return res.render('admin-mot-de-passe', {
+      erreur: 'Une erreur est survenue, merci de réessayer.',
+      succes: false,
+    });
+  }
 });
 
 module.exports = router;
