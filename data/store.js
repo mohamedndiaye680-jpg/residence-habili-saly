@@ -77,9 +77,19 @@ async function marquerMessageTraite(id, traite) {
   return msg;
 }
 
+async function supprimerMessage(id) {
+  if (mongoConnecte()) {
+    await Message.findByIdAndDelete(id);
+    return;
+  }
+  const messages = lireMessagesFichier().filter((m) => String(m.id) !== String(id));
+  fs.writeFileSync(MESSAGES_PATH, JSON.stringify(messages, null, 2), 'utf-8');
+}
+
 module.exports = {
   lireVilla,
   lireMessages,
   ajouterMessage,
   marquerMessageTraite,
+  supprimerMessage,
 };

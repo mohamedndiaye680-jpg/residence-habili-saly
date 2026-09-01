@@ -111,6 +111,11 @@
             color: var(--blanc);
         }
         .admin-badge.traite { background: var(--succes); }
+        .admin-carte-demande__actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
         .admin-toggle-form button {
             border: 1px solid var(--sable-fonce);
             background: var(--blanc);
@@ -118,6 +123,24 @@
             padding: 6px 14px;
             cursor: pointer;
             font-size: 0.85rem;
+        }
+        .admin-bouton-supprimer {
+            border: 1px solid var(--sable-fonce);
+            background: var(--blanc);
+            border-radius: var(--rayon-petit);
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1rem;
+            color: var(--erreur);
+            line-height: 1;
+        }
+        .admin-bouton-supprimer:hover {
+            background: #fbe9e5;
+            border-color: var(--erreur);
         }
     </style>
 </head>
@@ -156,12 +179,19 @@
                     <span><strong>Hébergement :</strong> <%= m.typeHebergement %></span>
                 </div>
                 <div class="admin-carte-demande__message"><%= m.message %></div>
-                <form class="admin-toggle-form" method="POST" action="/admin/messages/<%= id %>/traite">
-                    <input type="hidden" name="traite" value="<%= m.traite ? '0' : '1' %>">
-                    <button type="submit">
-                        <%= m.traite ? 'Marquer comme non traité' : 'Marquer comme traité' %>
-                    </button>
-                </form>
+                <div class="admin-carte-demande__actions">
+                    <form class="admin-toggle-form" method="POST" action="/admin/messages/<%= id %>/traite">
+                        <input type="hidden" name="traite" value="<%= m.traite ? '0' : '1' %>">
+                        <button type="submit">
+                            <%= m.traite ? 'Marquer comme non traité' : 'Marquer comme traité' %>
+                        </button>
+                    </form>
+                    <form class="admin-supprimer-form" method="POST" action="/admin/messages/<%= id %>/supprimer" onsubmit="return confirm('Supprimer définitivement la demande de <%= m.nom.replace(/'/g, '') %> ?');">
+                        <button type="submit" class="admin-bouton-supprimer" aria-label="Supprimer cette demande" title="Supprimer cette demande">
+                            🗑
+                        </button>
+                    </form>
+                </div>
             </div>
         <% }); %>
     <% } %>

@@ -5,7 +5,7 @@
 
 const express = require('express');
 const router = express.Router();
-const { lireMessages, marquerMessageTraite } = require('../data/store');
+const { lireMessages, marquerMessageTraite, supprimerMessage } = require('../data/store');
 const { verifierMotDePasse, definirNouveauMotDePasse } = require('../data/adminAuth');
 
 function estConnecte(req) {
@@ -55,6 +55,12 @@ router.get('/', exigerConnexion, async (req, res) => {
 router.post('/messages/:id/traite', exigerConnexion, async (req, res) => {
   const traite = req.body.traite === '1';
   await marquerMessageTraite(req.params.id, traite);
+  res.redirect('/admin');
+});
+
+// --- Supprimer une demande ---
+router.post('/messages/:id/supprimer', exigerConnexion, async (req, res) => {
+  await supprimerMessage(req.params.id);
   res.redirect('/admin');
 });
 
